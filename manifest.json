@@ -6,21 +6,24 @@
     "entrypoint": "pcn_clone.app.server:server"
   },
   "python": {
-    "version": "3.12.15",
+    "version": "3.11.9",
     "package_manager": {
       "name": "pip",
-      "version": "26.2.2",
+      "version": "26.3",
       "package_file": "requirements.txt"
     }
   },
   "environment": {
     "python": {
-      "requires": "~=3.12.0"
+      "requires": "~=3.11.0"
     }
   },
   "files": {
     "requirements.txt": {
       "checksum": "1d4f5f932ca432f3bc31c3b0deffcd00"
+    },
+    ".gitattributes": {
+      "checksum": "629aaf3a623054d5c5eda39bf74aeacc"
     },
     ".gitignore": {
       "checksum": "ec71f4b00a1f39a4394bf62ccfecf555"
@@ -29,7 +32,7 @@
       "checksum": "bf72105a69d303b78352c6a39239bc69"
     },
     "README.md": {
-      "checksum": "e1cce35482cbd75f4a54a4cd93295dbf"
+      "checksum": "c1cba0bc78352a7719f5eb1800f1c869"
     },
     "pcn_clone/__init__.py": {
       "checksum": "d41d8cd98f00b204e9800998ecf8427e"
@@ -38,7 +41,7 @@
       "checksum": "2bd776f3f73cd4520f0f62878f58fba4"
     },
     "pcn_clone/ai/assess.py": {
-      "checksum": "4a6f9dab8c051e97acd30127cf4aba5e"
+      "checksum": "c326b5a73a6a7ecae1a5bdf28f1d095d"
     },
     "pcn_clone/ai/config.py": {
       "checksum": "ae3ebd5b012c2bc575d3da1f2d549694"
@@ -392,7 +395,7 @@
       "checksum": "d41d8cd98f00b204e9800998ecf8427e"
     },
     "pyproject.toml": {
-      "checksum": "ddd618f89b1df42fc757e4025df73735"
+      "checksum": "1a951882a35e742b124316e4631f0670"
     }
   }
 }

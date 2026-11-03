@@ -10,7 +10,7 @@ application, a Next.js app, in Dash on a FastAPI backend.
 
 ## Setup
 
-Requires Python 3.12 and [uv](https://docs.astral.sh/uv/).
+Requires Python 3.11.9 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 uv sync                                  # creates .venv with pinned dependencies
@@ -160,7 +160,7 @@ first deploy, start with `PCN_AI_PROVIDER=fake` and check:
   which the prefix setting above assumes.
 
 `manifest.json` and `requirements.txt` describe the deployment for
-rsconnect-python: Python 3.12, the FastAPI app mode and entrypoint, the
+rsconnect-python: Python 3.11, the FastAPI app mode and entrypoint, the
 runtime packages pinned from `uv.lock`, and the files to bundle (the app,
 without tests, caches or `.env`). `uv.lock` stays the source of truth, so
 regenerate both whenever dependencies or app files change:
@@ -171,7 +171,7 @@ uv run --with rsconnect-python rsconnect write-manifest fastapi . --overwrite \
   --entrypoint pcn_clone.app.server:server -r requirements.txt \
   -x '.env' -x '.env.*' -x 'tests' -x 'tests/**' -x '.venv' -x '.venv/**' \
   -x '.mypy_cache/**' -x '.pytest_cache/**' -x '.ruff_cache/**' -x '**/*.pyc' \
-  -x 'uv.lock' -x '.python-version'
+  -x 'uv.lock' -x '.python-version' -x 'tasks/**' -x 'dist/**'
 ```
 
 ## Reviewing a phase in dev

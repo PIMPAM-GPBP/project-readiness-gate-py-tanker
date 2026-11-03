@@ -27,7 +27,7 @@ import copy
 import logging
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 from pydantic.alias_generators import to_camel
@@ -160,7 +160,10 @@ class ScoreCriterionRequest(_Request):
     criterion_id: NonEmptyStr
 
 
-def _validated[R: _Request](request_type: type[R], request: Any) -> R | str:
+R = TypeVar("R", bound=_Request)
+
+
+def _validated(request_type: type[R], request: Any) -> R | str:
     """The validated request, or the ``Invalid request — …`` message."""
     if isinstance(request, request_type):
         return request

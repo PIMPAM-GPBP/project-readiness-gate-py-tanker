@@ -5,7 +5,7 @@ description = "Python rebuild of the core PCN (Project Concept Note) proposal an
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
-requires-python = ">=3.12"
+requires-python = ">=3.11.9"
 dependencies = [
     "dash-mantine-components==2.8.0",
     "dash[fastapi]==4.4.1",
@@ -34,7 +34,7 @@ packages = ["pcn_clone"]
 include = ["/pcn_clone", "/tests", "/README.md"]
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
@@ -47,6 +47,7 @@ allowed-confusables = ["×", "–"]
 
 [tool.mypy]
 strict = true
+python_version = "3.11"
 packages = ["pcn_clone"]
 plugins = ["pydantic.mypy"]
 # Dash ships types, but its page and asset helpers are unannotated.
