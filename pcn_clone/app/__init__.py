@@ -18,7 +18,9 @@ Conventions for page modules:
   stays on whichever root address they arrived at. Asset URLs go through
   ``dash.get_asset_url``, so assets, callbacks and the WebSocket follow the
   path prefix (set ``DASH_REQUESTS_PATHNAME_PREFIX``: ``/content/<GUID>/`` on
-  Posit Connect, or for example ``/pcn/`` behind a proxy).
+  Posit Connect, or for example ``/pcn/`` behind a proxy). Connect forwards
+  the full path and announces the mount location in the ASGI ``root_path``;
+  ``root_path.py`` folds it away for Dash's own requests.
 """
 
 from __future__ import annotations
@@ -37,6 +39,7 @@ from pcn_clone.app.notify import TOASTS_ID
 from pcn_clone.app.pages import NOT_FOUND, PAGES
 from pcn_clone.app.review import run_stores
 from pcn_clone.app.review.run import WEBSOCKET_INACTIVITY_TIMEOUT_MS
+from pcn_clone.app.root_path import FoldRootPath
 from pcn_clone.app.routing import (
     CONTENT_ID,
     LOCATION_ID,
@@ -106,6 +109,9 @@ def create_app() -> Dash:
     )
     register_router(app, PAGES, NOT_FOUND)
     register_shell_callbacks(app)
+    app.server.add_middleware(
+        FoldRootPath, routes_prefix=app.config.routes_pathname_prefix
+    )
     _finish_setup_on_startup(app)
     return app
 

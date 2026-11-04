@@ -156,8 +156,12 @@ first deploy, start with `PCN_AI_PROVIDER=fake` and check:
 - that the WebSocket opens: Connect must pass on a `Host` that matches the
   browser's `Origin`, or Dash refuses the socket (403) and the review run
   fails;
-- that Connect strips `/content/<GUID>/` before forwarding to the app,
-  which the prefix setting above assumes.
+- that requests keep reaching the app the way Connect was observed to
+  forward them: with the full path, `/content/<GUID>/…`, and the mount
+  location in the ASGI `root_path`. The app folds the root away only for
+  Dash's page and `_dash-*` requests (`pcn_clone/app/root_path.py`);
+  everything else (assets, the WebSocket, FastAPI's `/docs`) keeps the
+  mount location.
 
 `manifest.json` and `requirements.txt` describe the deployment for
 rsconnect-python: Python 3.11, the FastAPI app mode and entrypoint, the

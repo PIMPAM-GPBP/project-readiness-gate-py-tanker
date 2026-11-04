@@ -5,7 +5,11 @@ Run as a module, this file is that fresh process:
 ``python -m tests.app_helpers first-request /methodology`` builds the app,
 starts it, requests the path first and prints the response as JSON;
 ``python -m tests.app_helpers urls`` prints every internal URL the shell and
-the static pages render, plus those in the served index page.
+the static pages render, plus those in the served index page;
+``connect-request <root_path> <path>...`` requests each path with the ASGI
+``root_path`` set as Posit Connect sets it and prints the responses by
+path; ``connect-websocket <root_path> <path>`` opens a WebSocket the same
+way and prints whether it was accepted.
 """
 
 from __future__ import annotations
@@ -59,14 +63,20 @@ def render(page: Page) -> Component:
 
 
 @contextmanager
-def started_client(app: Dash) -> Iterator[TestClient]:
-    """A started HTTP client on ``app``. Starlette deprecates its client's
-    use of httpx; that notice is not about this code, so it is muted."""
+def started_client(
+    app: Dash, *, root_path: str = "", raise_errors: bool = True
+) -> Iterator[TestClient]:
+    """A started HTTP client on ``app`` whose requests carry ``root_path``;
+    with ``raise_errors`` off, a server error is answered as a 500 instead of
+    raised. Starlette deprecates its client's use of httpx; that notice is
+    not about this code, so it is muted."""
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", message="Using `httpx` with")
         from starlette.testclient import TestClient
 
-    with TestClient(app.server) as client:
+    with TestClient(
+        app.server, root_path=root_path, raise_server_exceptions=raise_errors
+    ) as client:
         yield client
 
 
@@ -120,7 +130,42 @@ def _urls() -> dict[str, Any]:
     return {"prefix": app.config.requests_pathname_prefix, "urls": urls}
 
 
+def _connect_request(root_path: str, *paths: str) -> dict[str, Any]:
+    from pcn_clone.app import create_app
+
+    responses: dict[str, dict[str, Any]] = {}
+    app = create_app()
+    with started_client(app, root_path=root_path, raise_errors=False) as client:
+        for path in paths:
+            response = client.get(path)
+            responses[path] = {
+                "status": response.status_code,
+                "content_type": response.headers.get("content-type", ""),
+                "text": response.text,
+            }
+    return responses
+
+
+def _connect_websocket(root_path: str, path: str) -> dict[str, Any]:
+    from pcn_clone.app import create_app
+
+    with started_client(create_app(), root_path=root_path) as client:
+        try:
+            with client.websocket_connect(
+                path, headers={"origin": str(client.base_url)}
+            ):
+                pass
+        except Exception as error:
+            return {"accepted": False, "error": repr(error)}
+    return {"accepted": True, "error": None}
+
+
 if __name__ == "__main__":
     mode, *rest = sys.argv[1:]
-    output = _first_request(rest[0]) if mode == "first-request" else _urls()
-    print(json.dumps(output))
+    modes: dict[str, Callable[..., dict[str, Any]]] = {
+        "first-request": _first_request,
+        "urls": _urls,
+        "connect-request": _connect_request,
+        "connect-websocket": _connect_websocket,
+    }
+    print(json.dumps(modes[mode](*rest)))
